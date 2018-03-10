@@ -9,3 +9,8 @@ class HomeView(TemplateView):
     template_name="main/index.html"
     def get(self,request):
         return render(request,self.template_name)
+
+class DBView(TemplateView):
+    template_name="dbsequence/dbsequence.html"
+    def get(self,request):
+        return render(request,self.template_name)

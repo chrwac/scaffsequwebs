@@ -1,11 +1,62 @@
+
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <title>{% block title %} {% endblock %}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
+      {% block head %}
+      <meta charset="utf-8">
+      <title> Scaffold Sequences </title>
+      {% endblock %}
+      <style>
+      .btn-margin-right {
+        margin-right: 2px;
+      }
+      body
+      {
+        background-color: MidnightBlue;
+      }
+      .jumbotron
+      {
+        background-color: Black;
+      }
+      </style>
   </head>
   <body>
+    <br>
+    <div class="jumbotron">
+    <nav class="navbar navbar-light bg-faded container">
+    <form class="form-inline">
+      <a href="/" class="btn btn-info btn-lg btn-margin-right" role="button" aria-pressed="true">Home</a>
+      <a href="/DBSequence/" class="btn btn-primary btn-lg btn-margin-right" role="button" aria-pressed="true">De Bruijn sequence</a>
+      <a href="/RepetitiveSequence/" class="btn btn-info btn-lg btn-margin-right" role="button" aria-pressed="true">RepetitiveSequence</a>
+      <a href="/MarkovSequence/" class="btn btn-primary btn-lg btn-margin-right" role="button" aria-pressed="true">Markov Sequence</a>
+      <a href="/CheckSequence/" class="btn btn-info btn-lg btn-margin-right" role="button" aria-pressed="true">Sequence Checker</a>
+
+      <!--<button class="btn btn-primary btn-lg" type="button">De Bruijn sequence</button>-->
+      <!--<button class="btn btn-sm align-middle btn-outline-secondary" type="button">Markov Sequence</button>-->
+      <!--<button class="btn btn-primary btn-lg" type="button">Markov Sequence</button>-->
+    </form>
+  </nav>
+</div>
+    <br>
+    <div class="container text-white">
     {% block body %}
+    <h4>Generate DNA scaffold-sequences</h4>
+    <div class="container text-white">
+    Generate scaffold sequences with particular properties.
+  </div>
+    <div class="container text-white">
+      Markovian Sequences as well as sequences that fulfill
+    </div>
+    <div class="container text-white">
+    the De Bruijn property can be generated.
+    </div>
+
     {% endblock %}
+  </div>
   </body>
 </html>
