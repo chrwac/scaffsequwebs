@@ -20,7 +20,10 @@ from . import views
 
 
 urlpatterns = [
-    url(r'^admin/$', admin.site.urls),
+    url(r'^admin/', admin.site.urls),
     url(r'^$',views.HomeView.as_view()),
-    url(r'^DBSequence/$',views.DBView.as_view())
+    url(r'^DBSequence/$',views.DBView.as_view()),
+    url(r'^RepetitiveSequence/$',views.RepSequView.as_view()),
+    url(r'^MarkovSequence/$',views.MarkSequView.as_view()),
+    url(r'^CheckSequence/$',views.CheckSequView.as_view())
 ]

@@ -1,11 +1,11 @@
 {% extends 'main/base.html'%}
 {% block head %}
-<title> DB Sequence </title>
+<title> Rep Sequence </title>
 {% endblock %}
 
 {% block body %}
 <div class="container">
-  <h3>Generate de Bruijn Sequence</h3>
+  <h3>Generate Repetitive Sequence</h3>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
