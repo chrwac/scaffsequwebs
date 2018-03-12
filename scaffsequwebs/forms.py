@@ -17,4 +17,9 @@ class MarkSequForm(forms.Form):
     email = forms.EmailField()
 
 class CheckSequForm(forms.Form):
-    sequence = forms.CharField(required=False,widget=forms.Textarea(attrs={'rows': 8, 'cols': 80}))
+    sequence = forms.CharField(widget=forms.Textarea(attrs={'rows': 8, 'cols': 80}))
+
+class RevCompForm(forms.Form):
+    sequence = forms.CharField(widget=forms.Textarea(attrs={'rows': 8, 'cols': 80}))
+    reverse = forms.BooleanField(required=False)
+    complement = forms.BooleanField(required=False)

@@ -5,12 +5,11 @@
 
 {% block body %}
 <div class="container">
-  <h3>Analyze Scaffold Sequence</h3>
+  <h3>Generate Rev/Comp Sequence</h3>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Analyze Sequence</button>
+    <button type="submit">Submit</button>
   </form>
 </div>
 {% endblock %}
-d

@@ -25,5 +25,6 @@ urlpatterns = [
     url(r'^DBSequence/$',views.DBView.as_view()),
     url(r'^RepetitiveSequence/$',views.RepSequView.as_view()),
     url(r'^MarkovSequence/$',views.MarkSequView.as_view()),
-    url(r'^CheckSequence/$',views.CheckSequView.as_view())
+    url(r'^CheckSequence/$',views.CheckSequView.as_view()),
+    url(r'^RevComp/$',views.RevCompView.as_view())
 ]

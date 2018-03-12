@@ -3,10 +3,10 @@ from django.views.generic import TemplateView
 from django.shortcuts import render
 from . import forms
 from .models import GeneratedSequence
-from .create_markov_sequence import MarkovSequence
-from .analyze_sequence import SequenceAnalyzer
-#def index(request):
-#    return HttpResponse("<h1> This is the most simple website imaginable </h1>")
+from .sequ_funcs.create_markov_sequence import MarkovSequence
+from .sequ_funcs.analyze_sequence import SequenceAnalyzer
+from .sequ_funcs.validate_sequence import SequenceValidator
+from .sequ_funcs.dna_sequence import  CDNASequence
 
 class HomeView(TemplateView):
     template_name="main/index.html"
@@ -54,7 +54,48 @@ class CheckSequView(TemplateView):
         sequ=""
         if(form.is_valid()):
             sequ = form.cleaned_data["sequence"]
-        sequ_analyzer = SequenceAnalyzer(sequ)
-        letter_count = sequ_analyzer.CountLetters()
-        param_dict = {"letter_count":letter_count}
-        return render(request,"checksequ/checksequ_response.html",param_dict)
+        ## check whether the sequence is a valid DNA sequence:
+        sv = SequenceValidator(sequ)
+        if((sv.IsValid()==False) or (len(sequ)==0)):
+            param_dict = {"sequ":sequ}
+            return render(request,"errors/error_invalid_sequence.html",param_dict)
+        else:
+            sequ_analyzer = SequenceAnalyzer(sv.GetSequence())
+            letter_count = sequ_analyzer.CountLetters()
+            param_dict = {"letter_count":letter_count}
+            return render(request,"checksequ/checksequ_response.html",param_dict)
+
+class RevCompView(TemplateView):
+    template_name = "revcomp/revcomp.html"
+    def get(self,request):
+        form = forms.RevCompForm()
+        return render(request,self.template_name,{"form":form})
+    def post(self,request):
+        form = forms.RevCompForm(request.POST)
+        sequ=""
+        reverse=False
+        complement=False
+        if(form.is_valid()):
+            sequ = form.cleaned_data["sequence"]
+            reverse=form.cleaned_data["reverse"]
+            complement=form.cleaned_data["complement"]
+        message_string = "reverse: "+ str(reverse) + "complement: "+  str(complement)
+        ## CHECK FOR VALIDITY OF THE ENTERED SEQUENCE:
+        sv = SequenceValidator(sequ)
+        sequ = sv.GetSequence()
+        orig_sequ = sequ
+        if((sv.IsValid()==False) or (len(sequ)==0)):
+            param_dict = {"sequ":sequ}
+            return render(request,"errors/error_invalid_sequence.html",param_dict)
+        else:
+            dna_sequ = CDNASequence()
+            dna_sequ.SetSequence(sequ)
+            if(reverse==True):
+                sequ = dna_sequ.GetReverse()
+                dna_sequ.SetSequence(sequ)
+            if(complement==True):
+                sequ = dna_sequ.GetComplement()
+
+            param_dict = {"orig_sequ":orig_sequ,"sequ":sequ}
+            return render(request,"revcomp/revcomp_response.html",param_dict)
+            #pass
