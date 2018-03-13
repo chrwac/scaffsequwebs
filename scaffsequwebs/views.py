@@ -71,6 +71,14 @@ class RepSequView(TemplateView):
         return render(request,self.template_name,{'form':form})
     def post(self,request):
         form = forms.RepSequForm(request.POST)
+        rep_sequ  = ""
+        length_of_variable_part = 0
+        email = ""
+        if(form.is_valid()):
+            rep_sequ = form.cleaned_data["rep_sequ"]
+            length_of_variable_part = form.cleaned_data["length_of_variable_part"]
+            email=form.cleaned_data["email"]
+            
 
 class MarkSequView(TemplateView):
     template_name="marksequ/marksequ.html"
