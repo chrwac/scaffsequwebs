@@ -4,8 +4,37 @@
 {% endblock %}
 
 {% block body %}
+<h3>Sequence: </h3>
+<textarea readonly class="form-control" rows="5" style="font-size:12pt;">
+{{sequ}}
+</textarea>
+<h4> letter counts: </h4>
 <div>A: {{letter_count.A}}</div>
 <div>C: {{letter_count.C}}</div>
 <div>G: {{letter_count.G}}</div>
 <div>T: {{letter_count.T}}</div>
+<br>
+<div>
+  relative CG - content: {{cg_content|floatformat:3}}
+</div>
+<br>
+{% if message %}
+<h4> {{message}} </h4>
+{% endif %}
+{% if string_of_duplicates %}
+<textarea readonly class="form-control" rows="5" style="font-size:12pt;">
+{{string_of_duplicates}}
+</textarea>
+{% endif %}
+<br>
+{% if message_revcomp %}
+<h4> {{message_revcomp}} </h4>
+  {% if string_of_revcomps %}
+  <textarea readonly class="form-control" rows="5" style="font-size:12pt;">
+  {{string_of_revcomps}}
+  </textarea>
+  {% endif %}
+{% endif %}
+
+
 {% endblock %}

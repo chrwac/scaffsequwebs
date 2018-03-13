@@ -1,9 +1,10 @@
-from debruijn_graph import CDeBruijnGraph
-from dna_sequence import CDNASequence
-from dna_sequence import DNASequRevComplement
+from .debruijn_graph import CDeBruijnGraph
+from .dna_sequence import CDNASequence
+from .dna_sequence import DNASequRevComplement
 import numpy as np
 import datetime
 import random
+import sys, threading
 
 class CDeBruijnSequence(CDNASequence):
 	def __init__(self,order_sequ=7,rev_comp_free=False,initial_sequence="",length=7560):
@@ -21,7 +22,7 @@ class CDeBruijnSequence(CDNASequence):
 
 		self._initial_depth=0
 		self._timedelta_max = datetime.timedelta(0,10,0) ## a maximum of 3 s
-	
+
 	#def RemoveSequence(self):
 	#	for i in range(0,self._)
 	def PreventSequence(self,substring):
@@ -41,7 +42,7 @@ class CDeBruijnSequence(CDNASequence):
 		## start with random index:
 		num_vertices = self._db_graph.GetNumberOfVertices()
 		cti = np.random.randint(0,num_vertices)
-		
+
 		if(self._initial_sequence==""):
 			print("initial sequence is empty")
 			self._initial_tuple_index = cti
@@ -100,7 +101,7 @@ class CDeBruijnSequence(CDNASequence):
 				self._solution_found=True
 			return
 		else:	## final length not yet reached
-			if(self._end_reached==False): ## check whether time-out has occured 
+			if(self._end_reached==False): ## check whether time-out has occured
 				curr_sequ+=self._db_graph.VertexNameByIndex(curr_tuple_index)[0]
 				curr_neighbors = self._db_graph.GetNeighborsByVertexIndex(curr_tuple_index)
 				num_neighbors = len(curr_neighbors)
@@ -119,7 +120,7 @@ class CDeBruijnSequence(CDNASequence):
 						curr_rev_complement = DNASequRevComplement(curr_tup_sequence)
 						first_partstring = curr_rev_complement[0:self._db_graph.GetOrder()]
 						second_partstring = curr_rev_complement[1:self._db_graph.GetOrder()+1]
-												 
+
 						if(self._db_graph.HasConnectionByStrings(curr_rev_complement[0:self._db_graph.GetOrder()],curr_rev_complement[1:self._db_graph.GetOrder()+1])):
 							self._db_graph.DeleteEdgesByStrings(curr_rev_complement[0:self._db_graph.GetOrder()],curr_rev_complement[1:self._db_graph.GetOrder()+1])
 							rev_comp_removed=True
@@ -129,16 +130,41 @@ class CDeBruijnSequence(CDNASequence):
 					was_in_list=first_element in curr_neighbors
 					if(was_in_list):
 						curr_neighbors.remove(first_element)
-					
+
 
 					self.__CreateDeBruijnSequenceRecursively(curr_sequ,first_element,curr_depth+1,rev_comp_free)
-					
+
 					## BASICALLY UNTESTED CODE
 					if(was_in_list):
 						curr_neighbors.append(first_element)
-					
+
 					if(rev_comp_removed==True):
 						self._db_graph.AppendEdgeByStrings(curr_rev_complement[0:self._db_graph.GetOrder()],curr_rev_complement[1:self._db_graph.GetOrder()+1])
+
+
+
+if __name__ == "__main__":
+
+		### super annoying workaround due to recursion limit (or much more stack size limit....)
+		### better long-term solution is to change the algorithm from a recursive one to an iterative one....
+
+		order_of_sequ = 7
+		rev_comp_free = False
+		length = 7560
+		def test():
+			global order_of_sequ
+			global rev_comp_free
+			global length
+			dbs = CDeBruijnSequence(order_sequ=order_of_sequ,initial_sequence="",length=length,rev_comp_free=rev_comp_free)
+			dbs.CreateDeBruijnSequence()
+			sequ = dbs.GetSequence()
+			print(sequ)
+
+		sys.setrecursionlimit(20000000)
+		threading.stack_size(64000000)
+		thread=threading.Thread(target=test)
+		thread.start()
+		thread.join()
 
 #dbs = CDeBruijnSequence(order_sequ=5,initial_sequence="",length=20,rev_comp_free=True)
 #dbs.PrintInfo();
