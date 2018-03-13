@@ -7,15 +7,18 @@ from .sequ_funcs.create_markov_sequence import MarkovSequence
 from .sequ_funcs.analyze_sequence import SequenceAnalyzer
 from .sequ_funcs.validate_sequence import SequenceValidator
 from .sequ_funcs.dna_sequence import  CDNASequence
+from .sequ_funcs.dna_sequence import  CDNARepTupleSequence
 from .sequ_funcs.debruijn_sequence import CDeBruijnSequence
 import sys, threading
 import copy
+
+db_sequence=""
 
 class HomeView(TemplateView):
     template_name="main/index.html"
     def get(self,request):
         return render(request,self.template_name)
-db_sequence=""
+
 class DBView(TemplateView):
     template_name="dbsequence/dbsequence.html"
     def get(self,request):
@@ -35,25 +38,34 @@ class DBView(TemplateView):
             length = form.cleaned_data["length"]
             rev_comp_free=form.cleaned_data["rev_comp_free"]
 
+        if(len(init_sequ)>0):
+            sv = SequenceValidator(init_sequ)
+            if(sv.IsValid()==False):
+                param_dict = {"sequ":init_sequ}
+                return render(request,"errors/error_invalid_sequence.html",param_dict)
+            else:
+                init_sequ = sv.GetSequence()
+        ## check the same thing with the sequences that shall be prevented:
+        if(len(forbidden_sequ)>0):
+            print("sequences shall be forbidden:")
+            print(forbidden_sequ)
+            forbidden_sequ=forbidden_sequ.replace("\r","")
+            forbidden_sequ=forbidden_sequ.replace("\t","")
+            forbidden_sequ=forbidden_sequ.replace("\n","")
+            list_of_sequs = forbidden_sequ.strip().split(";")
+            print(list_of_sequs)
+
         def test():
             global db_sequence
-        #    global order
-        #    global init_sequ
-        #    global forbidden_sequ
-        #    global length
-    #        global rev_comp_free
-#            global db_sequence
-            print(length)
-            print(order)
+            #print(length)
+            #print(order)
             dbs = CDeBruijnSequence(order_sequ=order,rev_comp_free=rev_comp_free,initial_sequence=init_sequ,length=length)
             dbs.CreateDeBruijnSequence()
             db_sequence = copy.copy(dbs.GetSequence())
-            print(db_sequence)
             #print(db_sequence)
+
         print("SOLUTION: ")
         print(db_sequence)
-        sys.setrecursionlimit(20000000)
-        #threading.stack_size(6400000)
         sys.setrecursionlimit(20000000)
         threading.stack_size(64000000)
         thread=threading.Thread(target=test)
@@ -78,7 +90,16 @@ class RepSequView(TemplateView):
             rep_sequ = form.cleaned_data["rep_sequ"]
             length_of_variable_part = form.cleaned_data["length_of_variable_part"]
             email=form.cleaned_data["email"]
-            
+
+        dna_sequ_reptuple = CDNARepTupleSequence(length_of_variable_part,rep_sequ)
+        dna_sequ_reptuple.InitTuples()
+        dna_sequ_reptuple.DeleteSubsequ(rep_sequ)
+        dna_sequ_reptuple.DeleteTuplesWithLetterAtIndex(0,rep_sequ[0])
+        dna_sequ_reptuple.DeleteTuplesWithLetterAtIndex(length_of_variable_part-1,rep_sequ[0])
+        dna_sequ_reptuple.CreateRepTupleSequence()
+        sequ_reptuple = dna_sequ_reptuple.GetSequence()
+        param_dict = {"rep_sequence":sequ_reptuple}
+        return render(request,"repsequ/repsequ_response.html",param_dict)
 
 class MarkSequView(TemplateView):
     template_name="marksequ/marksequ.html"

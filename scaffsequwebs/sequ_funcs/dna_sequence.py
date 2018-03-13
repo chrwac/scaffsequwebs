@@ -172,8 +172,13 @@ if __name__ == "__main__":
 		print("the reversed complement is:")
 		print(sequ1_rev_comp)
 
-		dna_sequ_reptuple = CDNARepTupleSequence(6,"AA")
+		dna_sequ_reptuple = CDNARepTupleSequence(5,"AA")
 		dna_sequ_reptuple.InitTuples()
+
+		dna_sequ_reptuple.DeleteTuplesWithLetterAtIndex(0,"A")
+		dna_sequ_reptuple.DeleteTuplesWithLetterAtIndex(4,"A")
+		dna_sequ_reptuple.DeleteSubsequ("AA")
+
 		dna_sequ_reptuple.CreateRepTupleSequence()
 		sequ_reptuple = dna_sequ_reptuple.GetSequence()
 		print("repetitive tuple sequence:")

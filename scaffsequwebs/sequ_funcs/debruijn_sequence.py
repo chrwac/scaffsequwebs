@@ -44,11 +44,11 @@ class CDeBruijnSequence(CDNASequence):
 		cti = np.random.randint(0,num_vertices)
 
 		if(self._initial_sequence==""):
-			print("initial sequence is empty")
+			#print("initial sequence is empty")
 			self._initial_tuple_index = cti
 			self._initial_depth=0
 		elif(self._initial_sequence!=""):
-			print("initial sequence is not empty")
+			#print("initial sequence is not empty")
 			first_tuple_string = self._initial_sequence[0:self._db_graph.GetOrder()]
 			self._initial_tuple_index=self._db_graph.VertexIndexByName(first_tuple_string)
 			self._sequ=self._initial_sequence[0:len(self._initial_sequence)-self._db_graph.GetOrder()]
@@ -78,26 +78,26 @@ class CDeBruijnSequence(CDNASequence):
 		self._curr_time = datetime.datetime.now()
 		#print(curr_depth)
 		if((self._curr_time-self._starting_time)>self._timedelta_max):
-			print("TIME OUT")
+			#print("TIME OUT")
 			self._end_reached=True
 			self._solution_found=False
 			return
 		if(curr_depth==self._scaffold_length):
-			print("final depth reached")
-			print("time required: ")
+			#print("final depth reached")
+			#print("time required: ")
 			dt = self._curr_time-self._starting_time
 			print(dt)
 			self._sequ=curr_sequ
 			self._end_reached=True
 			if(self._is_circular==True):
 				if(curr_tuple_index==self._initial_tuple_index):
-					print("circular solution found")
+					#print("circular solution found")
 					self._solution_found=True
 				else:
-					print("no circular solution found")
+					#print("no circular solution found")
 					self._solution_found=False
 			else:
-				print("linear solution found")
+				#print("linear solution found")
 				self._solution_found=True
 			return
 		else:	## final length not yet reached

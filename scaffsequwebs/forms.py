@@ -10,7 +10,7 @@ class DBSequForm(forms.Form):
 
 class RepSequForm(forms.Form):
     rep_sequ  = forms.ChoiceField(choices=[("AA","AA"),("TT","TT")])
-    length_of_variable_part = forms.IntegerField(min_value=6,max_value=8,initial=6)
+    length_of_variable_part = forms.IntegerField(min_value=4,max_value=8,initial=5)
     email = forms.EmailField()
 
 class MarkSequForm(forms.Form):
