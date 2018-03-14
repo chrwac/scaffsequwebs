@@ -14,8 +14,9 @@ class RepSequForm(forms.Form):
     email = forms.EmailField()
 
 class MarkSequForm(forms.Form):
-    mark_order = forms.IntegerField(min_value=1,max_value=4)
-    sequ_length = forms.IntegerField()
+    train_sequ = forms.CharField(widget=forms.Textarea(attrs={'rows':8,'cols':80}))
+    mark_order = forms.IntegerField(min_value=1,max_value=4,initial=1)
+    sequ_length = forms.IntegerField(initial=7560)
     email = forms.EmailField()
 
 class CheckSequForm(forms.Form):

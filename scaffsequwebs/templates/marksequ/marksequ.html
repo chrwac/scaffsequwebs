@@ -1,6 +1,18 @@
 {% extends 'main/base.html'%}
 {% block head %}
 <title> Mark Sequ </title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+window.onload = function myFunction()
+{
+  $( "#dialog" ).dialog({
+  position: { my: "left top", at: "left middle" }, height: 400
+});
+  document.getElementById("dialog").style.visibility="visible"
+}
+</script>
 {% endblock %}
 
 {% block body %}
@@ -11,5 +23,11 @@
     {{ form.as_p }}
     <button type="submit">Generate Sequence</button>
   </form>
+</div>
+<div id="dialog" title="Markov Sequence" style="visibility: hidden">
+  <em>Markov Sequence</em>
+  <p>The recommended approach is to first provide a training sequence (e.g.: the sequence of the original, mp13mp18-derived scaffold ). A random sequence will be generated that shares some statistics with the training sequence</p>
+  <em>Markov order</em>
+  <p>If, for example an order of 1 is chosen, then the generated sequence will roughly (up to some randomness) share the letter frequency of the training sequence. If an order of 2 was chosen, then the generated sequence will share the letter-to-letter transition probabilities with the training sequence and so on.</p>
 </div>
 {% endblock %}

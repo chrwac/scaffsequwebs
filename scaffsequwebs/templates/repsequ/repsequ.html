@@ -1,6 +1,18 @@
 {% extends 'main/base.html'%}
 {% block head %}
 <title> Rep Sequence </title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+window.onload = function myFunction()
+{
+  $( "#dialog" ).dialog({
+  position: { my: "left top", at: "left middle" }, height: 400
+});
+  document.getElementById("dialog").style.visibility="visible"
+}
+</script>
 {% endblock %}
 
 {% block body %}
@@ -11,5 +23,13 @@
     {{ form.as_p }}
     <button type="submit">Generate Sequence</button>
   </form>
+</div>
+
+<div id="dialog" title="Repetitive Sequence" style="visibility: hidden">
+  <em>Repetitive Sequence</a></em>
+  <p>The generated sequence will follow the following pattern: "*****XX*****XX", where the X represents either an A or a T.</p>
+  <em>Variable Part</a></em>
+  <p>The "*****" - part of the output sequence is non-repetitive and consists of basically every possible unique sequence consisting of the letters A,C,G,T. Some subsequences were forbidden, to prevent the occurrence of e.g. the motifs XXX or the occurence of "XX**XX*XX". The length of the variable part is determined by the length of variable part - parameter.  </p>
+
 </div>
 {% endblock %}

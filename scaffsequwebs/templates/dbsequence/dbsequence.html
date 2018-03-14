@@ -1,15 +1,45 @@
 {% extends 'main/base.html'%}
 {% block head %}
+
 <title> DB Sequence </title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+window.onload = function myFunction()
+{
+  $( "#dialog" ).dialog({
+  position: { my: "left top", at: "left middle" }, height: 400
+});
+  document.getElementById("dialog").style.visibility="visible"
+}
+</script>
 {% endblock %}
 
 {% block body %}
-<div class="container">
+<div class="container" id="test">
   <h3>Generate de Bruijn Sequence</h3>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
+    <!--<div class="fieldWrapper" id="id_init_sequ">
+      {{ form.init_sequ.errors }}
+      <label for="{{ form.init_sequ.id_for_label }}">Initial Sequence: </label>
+      {{form.init_sequ}}
+    </div>-->
     <button type="submit">Generate Sequence</button>
   </form>
+</div>
+
+<div id="dialog" title="De Bruijn Sequence" style="visibility: hidden">
+  <em><a href="https://en.wikipedia.org/wiki/De_Bruijn_sequence" target="_blank">De Bruijn Sequence</a></em>
+  <p> A sequence that fulfills the de Bruijn property consists of non-repetitive subsequences of length 'order'</p>
+  <p></p>
+  <em>Init Sequence</em>
+  <p> The initial sequence specifies the start of the output sequence. Tuples of length 'order' that occur in the initial sequence do not occur in the variable part of the output sequence. Sequences may only contain the letters A,C,G,T in lower- and uppercase.</p>
+  <em>Forbidden Sequences: </em>
+  <p>Forbidden sequences are sequences that will not appear in the final output sequence (at least if they don't already appear in the initial sequence). They should be separated by a semicolon, e.g.: CCCCCCC;GGGGGGG</p>
+  <em>Sequences free of reverse complements (Rev Comp Free)</em>
+  <p>For each tuple of the minimum length of "order", the reverse complementary sequence will not be part of the final output sequence. If, for example the tuple ACGTGAC is part of the sequence, then the tuple GTCACGT will not be part of the sequence.</p>
 </div>
 {% endblock %}

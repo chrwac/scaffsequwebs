@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 from django.shortcuts import render
 from . import forms
 from .models import GeneratedSequence
-from .sequ_funcs.create_markov_sequence import MarkovSequence
+from .sequ_funcs.markov_sequence import CMarkovSequence
 from .sequ_funcs.analyze_sequence import SequenceAnalyzer
 from .sequ_funcs.validate_sequence import SequenceValidator
 from .sequ_funcs.dna_sequence import  CDNASequence
@@ -127,11 +127,33 @@ class MarkSequView(TemplateView):
         if(form.is_valid()):
             mark_order = form.cleaned_data["mark_order"]
             sequ_length = form.cleaned_data["sequ_length"]
-        ms = MarkovSequence(mark_order)
-        sequ = ms.CreateFirstOrderSequence(sequ_length)
-        gs = GeneratedSequence(user_name="Christian",sequence=sequ,sequence_type="markov sequence")
-        gs.save()
-        return render(request,"marksequ/marksequ_response.html",{'markov_sequence':sequ})
+            train_sequ = form.cleaned_data["train_sequ"]
+
+
+        ## distinguish between two cases:
+        ## has a training sequence been given as an input(Y/N):
+        ## 1st case: trainng sequence was not given:
+        markov_sequ = ""
+        if(len(train_sequ)==0):
+            ms = CMarkovSequence(mark_order)
+            ms.CreateFirstOrderSequence(sequ_length)
+            markov_sequ = ms.GetSequence()
+            gs = GeneratedSequence(user_name="Christian",sequence=markov_sequ,sequence_type="markov sequence")
+            gs.save()
+        else:
+            sv = SequenceValidator(train_sequ)
+            if((sv.IsValid()==False)):
+                param_dict = {"sequ":train_sequ}
+                return render(request,"errors/error_invalid_sequence.html",param_dict)
+            else:
+                train_sequ = sv.GetSequence()
+                ms = CMarkovSequence(mark_order)
+                ms.TrainMarkovModel(train_sequ)
+                ms.CreateSequenceFromTrainedModel(sequ_length)
+                markov_sequ = ms.GetSequence()
+        #ms = MarkovSequence(mark_order)
+        #sequ = ms.CreateFirstOrderSequence(sequ_length)
+        return render(request,"marksequ/marksequ_response.html",{'markov_sequence':markov_sequ})
 
 class CheckSequView(TemplateView):
     template_name="checksequ/checksequ.html"
@@ -196,12 +218,6 @@ class CheckSequView(TemplateView):
                     param_dict["message_revcomp"] = message_revcomp
 
             return render(request,"checksequ/checksequ_response.html",param_dict)
-            #else:
-
-
-
-            #    return render(request,"checksequ/checksequ_response.html",param_dict)
-
 
 class RevCompView(TemplateView):
     template_name = "revcomp/revcomp.html"
@@ -236,4 +252,3 @@ class RevCompView(TemplateView):
 
             param_dict = {"orig_sequ":orig_sequ,"sequ":sequ}
             return render(request,"revcomp/revcomp_response.html",param_dict)
-            #pass
