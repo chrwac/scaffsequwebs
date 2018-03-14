@@ -1,6 +1,10 @@
 import numpy as np
 import sys
-from .dna_sequence import CDNASequence
+if __name__ == "__main__":
+	from dna_sequence import CDNASequence
+else:
+	from .dna_sequence import CDNASequence
+	
 letters = ('A','C','G','T')
 ''' de Bruijn - graph representation '''
 class CDeBruijnGraph():
@@ -81,21 +85,64 @@ class CDeBruijnGraph():
 		second_index = self.VertexIndexByName(second_string)
 		self.AppendEdge(first_index,second_index)
 	def PreventSequence(self,substring):
-		if(len(substring)>self.GetOrder()):
-			print("sequence too long")
-			return
+		""" prevent the generation of a particular sequence
+			3 cases have to be differentiated:
+			1. the sequence is longer as the order of the DB-sequence
+			 	--> decompose sequence into substrings of length of
+				the DB-sequence and call PreventSequence on each of these
+				strings
+			2. the sequence is as long as the order of the DB-sequence
+				--> split string into two substrings of length-1
+					and call "DeleteEdgesByString"
+			3. the sequence is shorter as the order of the DB-sequence
+				--> loop over all vertices and delete all of them that contain
+					the particular sequence"""
+		len_sequ = len(substring)
+		if(len_sequ>(self.GetOrder()+1)):
+			print("preventing sequence: " + substring)
+			for i in range(len_sequ-self.GetOrder()):
+				curr_string = substring[i:(i+self.GetOrder()+1)]
+				self.PreventSequence(curr_string)
+		elif(len_sequ==(self.GetOrder()+1)):
+			string1 = substring[0:self.GetOrder()]
+			string2 = substring[1:self.GetOrder()+1]
+			self.DeleteEdgesByStrings(string1,string2)
+			print("removed: " + substring)
 		else:
-			## loop over all vertices
-			for i in range(0,len(self._vertices)):
+			indices_to_delete = list()
+			for i in range(len(self._vertices)):
 				if(substring in self._vertices[i]):
+					indices_to_delete.append(i)
+			for i in indices_to_delete:
+				self._edges[i] = []
 
-					for j in range(0,4):
-						incident_string = letters[j] + self._vertices[i][0:self.GetOrder()-1]
-						print("incident string:")
+			for lo_indices in self._edges:
+				for index in indices_to_delete:
+					if(index in lo_indices):
+						lo_indices.remove(index)
+			print("removed: " + substring)
+			#for el in elements_to_delete:
+			#	self._vertices.remove(el)
+			#	print("removed"+el)
 
-						print(incident_string)
-						print("curr string:")
-						print(self._vertices[i])
-						self.DeleteEdgesByStrings(incident_string,self._vertices[i])
 
-					self._vertices[i] = []
+
+
+	#	if(len(substring)>self.GetOrder()):
+	#		print("sequence too long")
+	#		return
+	#	else:
+	#		## loop over all vertices
+	#		for i in range(0,len(self._vertices)):
+	#			if(substring in self._vertices[i]):##
+    #
+	#				for j in range(0,4):
+	#					incident_string = letters[j] + self._vertices[i][0:self.GetOrder()-1]
+	#					print("incident string:")#
+    #
+	#					print(incident_string)
+	#					print("curr string:")
+	#					print(self._vertices[i])
+	#					self.DeleteEdgesByStrings(incident_string,self._vertices[i])#
+    #
+	#				self._vertices[i] = []

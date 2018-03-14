@@ -1,6 +1,11 @@
-from .debruijn_graph import CDeBruijnGraph
-from .dna_sequence import CDNASequence
-from .dna_sequence import DNASequRevComplement
+if __name__ == "__main__":
+	from debruijn_graph import CDeBruijnGraph
+	from dna_sequence import CDNASequence
+	from dna_sequence import DNASequRevComplement
+else:
+	from .debruijn_graph import CDeBruijnGraph
+	from .dna_sequence import CDNASequence
+	from .dna_sequence import DNASequRevComplement
 import numpy as np
 import datetime
 import random
@@ -27,6 +32,8 @@ class CDeBruijnSequence(CDNASequence):
 	#	for i in range(0,self._)
 	def PreventSequence(self,substring):
 		self._db_graph.PreventSequence(substring)
+	def PrintEdges(self):
+		self._db_graph.PrintEdges()
 	def PrintInfo(self):
 		print("order of the sequence: ");
 		print(self._order_of_sequ);
@@ -156,6 +163,10 @@ if __name__ == "__main__":
 			global rev_comp_free
 			global length
 			dbs = CDeBruijnSequence(order_sequ=order_of_sequ,initial_sequence="",length=length,rev_comp_free=rev_comp_free)
+			dbs.PrintEdges()
+			dbs.PreventSequence("ACTGACTGACTG")
+			dbs.PreventSequence("CCCC")
+
 			dbs.CreateDeBruijnSequence()
 			sequ = dbs.GetSequence()
 			print(sequ)

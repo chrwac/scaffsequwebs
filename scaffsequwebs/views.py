@@ -46,6 +46,7 @@ class DBView(TemplateView):
             else:
                 init_sequ = sv.GetSequence()
         ## check the same thing with the sequences that shall be prevented:
+        list_of_forbidden_sequs=list()
         if(len(forbidden_sequ)>0):
             print("sequences shall be forbidden:")
             print(forbidden_sequ)
@@ -53,13 +54,25 @@ class DBView(TemplateView):
             forbidden_sequ=forbidden_sequ.replace("\t","")
             forbidden_sequ=forbidden_sequ.replace("\n","")
             list_of_sequs = forbidden_sequ.strip().split(";")
-            print(list_of_sequs)
+            if "" in list_of_sequs:
+                list_of_sequs.remove("")
+            for i in list_of_sequs:
+                sv = SequenceValidator(i)
+                if(sv.IsValid()==False):
+                    param_dict = {"sequ":i}
+                    return render(request,"errors/error_invalid_sequence.html",param_dict)
+                else:
+                    list_of_forbidden_sequs.append(sv.GetSequence())
+            print(list_of_forbidden_sequs)
 
         def test():
             global db_sequence
             #print(length)
             #print(order)
             dbs = CDeBruijnSequence(order_sequ=order,rev_comp_free=rev_comp_free,initial_sequence=init_sequ,length=length)
+            if(list_of_forbidden_sequs):
+                for el in list_of_forbidden_sequs:
+                    dbs.PreventSequence(el)
             dbs.CreateDeBruijnSequence()
             db_sequence = copy.copy(dbs.GetSequence())
             #print(db_sequence)
