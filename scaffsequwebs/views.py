@@ -3,6 +3,11 @@ from django.views.generic import TemplateView
 from django.shortcuts import render
 from . import forms
 from .models import GeneratedSequence
+
+from .models import DeBruijnSequence_DBModel
+from .models import RepetitiveSequence_DBModel
+from .models import MarkovSequence_DBModel
+
 from .sequ_funcs.markov_sequence import CMarkovSequence
 from .sequ_funcs.analyze_sequence import SequenceAnalyzer
 from .sequ_funcs.validate_sequence import SequenceValidator
@@ -29,6 +34,8 @@ class DBView(TemplateView):
         order=7
         init_sequ = ""
         forbidden_sequ=""
+        sequence_name=""
+        user_name=""
         rev_comp_free = False
         length=7560
         if(form.is_valid()):
@@ -37,6 +44,8 @@ class DBView(TemplateView):
             forbidden_sequ = form.cleaned_data["forbidden_sequ"]
             length = form.cleaned_data["length"]
             rev_comp_free=form.cleaned_data["rev_comp_free"]
+            sequence_name = form.cleaned_data["sequence_name"]
+            user_name = form.cleaned_data["user_name"]
 
         if(len(init_sequ)>0):
             sv = SequenceValidator(init_sequ)
@@ -84,6 +93,10 @@ class DBView(TemplateView):
         thread=threading.Thread(target=test)
         thread.start()
         thread.join()
+
+        gs_db = DeBruijnSequence_DBModel(user_name=user_name,sequ_name=sequence_name,db_order=order,sequ_length=len(db_sequence),sequence=db_sequence)
+        gs_db.save()
+
         param_dict = {"debruijn_sequence":db_sequence}
         return render(request,"dbsequence/dbsequence_response.html",param_dict)
 
@@ -98,11 +111,13 @@ class RepSequView(TemplateView):
         form = forms.RepSequForm(request.POST)
         rep_sequ  = ""
         length_of_variable_part = 0
-        email = ""
+        sequence_name=""
+        user_name=""
         if(form.is_valid()):
             rep_sequ = form.cleaned_data["rep_sequ"]
             length_of_variable_part = form.cleaned_data["length_of_variable_part"]
-            email=form.cleaned_data["email"]
+            sequence_name =  form.cleaned_data["sequence_name"]
+            user_name = form.cleaned_data["user_name"]
 
         dna_sequ_reptuple = CDNARepTupleSequence(length_of_variable_part,rep_sequ)
         dna_sequ_reptuple.InitTuples()
@@ -111,6 +126,10 @@ class RepSequView(TemplateView):
         dna_sequ_reptuple.DeleteTuplesWithLetterAtIndex(length_of_variable_part-1,rep_sequ[0])
         dna_sequ_reptuple.CreateRepTupleSequence()
         sequ_reptuple = dna_sequ_reptuple.GetSequence()
+
+        gs_db = RepetitiveSequence_DBModel(user_name=user_name,sequ_name=sequence_name,length_of_variable_part=length_of_variable_part,sequ_length=len(sequ_reptuple),sequence=sequ_reptuple)
+        gs_db.save()
+
         param_dict = {"rep_sequence":sequ_reptuple}
         return render(request,"repsequ/repsequ_response.html",param_dict)
 
@@ -124,11 +143,15 @@ class MarkSequView(TemplateView):
         form = forms.MarkSequForm(request.POST)
         mark_order=0
         sequ_length=0
+        user_name=""
+        sequence_name=""
+
         if(form.is_valid()):
             mark_order = form.cleaned_data["mark_order"]
             sequ_length = form.cleaned_data["sequ_length"]
             train_sequ = form.cleaned_data["train_sequ"]
-
+            sequence_name = form.cleaned_data["sequence_name"]
+            user_name = form.cleaned_data["user_name"]
 
         ## distinguish between two cases:
         ## has a training sequence been given as an input(Y/N):
@@ -138,8 +161,11 @@ class MarkSequView(TemplateView):
             ms = CMarkovSequence(mark_order)
             ms.CreateFirstOrderSequence(sequ_length)
             markov_sequ = ms.GetSequence()
-            gs = GeneratedSequence(user_name="Christian",sequence=markov_sequ,sequence_type="markov sequence")
-            gs.save()
+            #gs = GeneratedSequence(user_name="Christian",sequence=markov_sequ,sequence_type="markov sequence")
+            gs_db = MarkovSequence_DBModel(user_name=user_name,sequ_name=sequence_name,markov_order=1,sequ_length=len(markov_sequ),sequence=markov_sequ)
+            gs_db.save()
+            return render(request,"marksequ/marksequ_response.html",{'markov_sequence':markov_sequ})
+
         else:
             sv = SequenceValidator(train_sequ)
             if((sv.IsValid()==False)):
@@ -151,8 +177,10 @@ class MarkSequView(TemplateView):
                 ms.TrainMarkovModel(train_sequ)
                 ms.CreateSequenceFromTrainedModel(sequ_length)
                 markov_sequ = ms.GetSequence()
-        #ms = MarkovSequence(mark_order)
-        #sequ = ms.CreateFirstOrderSequence(sequ_length)
+
+        gs_db = MarkovSequence_DBModel(user_name=user_name,sequ_name=sequence_name,markov_order=mark_order,sequ_length=len(markov_sequ),sequence=markov_sequ)
+        gs_db.save()
+
         return render(request,"marksequ/marksequ_response.html",{'markov_sequence':markov_sequ})
 
 class CheckSequView(TemplateView):
